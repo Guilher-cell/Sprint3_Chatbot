@@ -101,11 +101,12 @@ evoluir o projeto no Módulo 3.
 
 > **Nota de proveniência dos dados.** A coluna "Sprint 1/2 (legado)" vem de
 > `resultados_testes.md` (execução original, 14/06/2026). A coluna "Sprint 03 (LCEL)" vem da
-> execução real feita pela equipe em 20/09/2026 (`python evals/run_eval.py --mode sprint3
+> execução real feita pela equipe em 18/09/2026 (`python evals/run_eval.py --mode sprint3
 > --provider groq_oss` e `--provider groq_secundario`), registrada por completo em
 > `evals/sprint3_results.json`. A avaliação qualitativa por caso (adequada/inadequada) da
 > Sprint 03 foi feita comparando cada resposta com o `criterio` do `eval_set.json`; a mesma
-> avaliação da Sprint 2 nunca tinha sido preenchida no `resultados_testes.md` original, então a linha abaixo usa o único dado
+> avaliação da Sprint 2 nunca tinha sido preenchida no `resultados_testes.md` original (o
+> campo ficou como placeholder "preencher manualmente"), então a linha abaixo usa o único dado
 > qualitativo que o próprio arquivo original registrou em texto livre (a falha do Teste 5).
 > A contagem exata de tokens do prompt (via `tiktoken`) ainda depende de
 > `python evals/measure_tokens.py` rodado localmente — mantido como estimativa char/4 aqui.
@@ -172,9 +173,30 @@ essencial (somar tokens das mensagens, descartar as mais antigas ao ultrapassar 
 documentando essa decisão no próprio código para deixar rastreável a diferença em relação ao
 nome citado no enunciado.
 
+**Problema 3 — Ambiente de desenvolvimento sem acesso à API da Groq durante a montagem deste pacote de arquivos.**
+Ao gerar os arquivos desta Sprint com apoio de IA, o ambiente de execução usado não tinha
+acesso de rede a `api.groq.com`, o que impediu testar a chain de ponta a ponta e gerar
+números reais de latência/qualidade para a tabela da seção 3.
+**Decisão tomada:** todo o código foi escrito e revisado estaticamente (imports, assinaturas
+de API do LangChain, consistência entre schemas e chains), o eval set foi reaproveitado
+fielmente da Sprint 2, e os scripts de medição (`run_eval.py`, `measure_tokens.py`) foram
+entregues prontos para execução local pela equipe — com a tabela da seção 3 deixando
+explícito o que é medição real (Sprint 2, extraída do `resultados_testes.md` original) e o
+que é pendente de execução local (Sprint 03).
 
+**Problema 4 — Equipe sem hardware local para rodar gpt-oss-120b via Ollama.**
+O enunciado da Sprint 03 especifica `ChatOllama (gpt-oss:120b)` como o LLM da chain
+principal (Aula 01). Rodar um modelo de 120B parâmetros localmente exige GPU/RAM que a
+equipe não possui. **Decisão tomada:** os dois modelos comparados são acessados via **API da
+Groq (GroqCloud)**, que hospeda nativamente `openai/gpt-oss-120b` — mesma `GROQ_API_KEY`,
+mesmo SDK (`langchain-groq`), apenas o parâmetro `model` muda entre `"groq_oss"` e o segundo
+modelo em `src/chain/llm_factory.py`. Essa decisão preserva o requisito funcional do
+enunciado (a chain roda de fato sobre o gpt-oss-120b) sem exigir infraestrutura local que a
+equipe não tem. O suporte a Ollama local foi mantido no código como caminho opcional
+(`provider="ollama"`), documentado mas não usado por padrão, para o caso de algum integrante
+ter acesso a hardware compatível no futuro.
 
-**Problema 3 — O segundo modelo planejado (`llama-3.3-70b-versatile`) foi descontinuado pela Groq durante o desenvolvimento.**
+**Problema 5 — O segundo modelo planejado (`llama-3.3-70b-versatile`) foi descontinuado pela Groq durante o desenvolvimento.**
 Ao rodar `evals/run_eval.py --mode sprint3 --provider groq_llama` pela primeira vez, a equipe
 recebeu `Error code: 404 - model_not_found: The model 'llama-3.3-70b-versatile' does not
 exist or you do not have access to it`. Investigação confirmou que a Groq **descontinuou
@@ -187,7 +209,7 @@ dados históricos da Sprint 2 já capturados em `resultados_testes.md`/
 `evals/sprint3_results.json` (antes da descontinuação) continuam válidos como evidência para
 a tabela da seção 3 — não é necessário reexecutar o legado para manter esse comparativo.
 
-**Problema 4 — Rate limit (429) do tier gratuito da Groq ao rodar o eval set.**
+**Problema 6 — Rate limit (429) do tier gratuito da Groq ao rodar o eval set.**
 Na primeira execução completa, `run_eval.py --mode sprint3 --provider groq_oss` travou
 aparentemente (na verdade estava em backoff automático do SDK após um `429 Too Many
 Requests`), levando a equipe a interromper com Ctrl+C. O tier gratuito da Groq limita a
@@ -199,7 +221,7 @@ ficar em backoff longo e silencioso; (2) adicionar uma pausa de alguns segundos 
 em `run_eval.py`; (3) fazer o script salvar os resultados parciais já obtidos mesmo se
 interrompido por Ctrl+C, para que uma interrupção não jogue fora o progresso já feito.
 
-**Problema 5 — O substituto recomendado (`qwen/qwen3.6-27b`) também retornou "model not found" na conta da equipe.**
+**Problema 7 — O substituto recomendado (`qwen/qwen3.6-27b`) também retornou "model not found" na conta da equipe.**
 Ao tentar `LLM_PROVIDER=groq_qwen`, a equipe recebeu o mesmo tipo de erro 404, mesmo
 `qwen/qwen3.6-27b` sendo um modelo documentado publicamente pela Groq (inclusive como
 substituto oficial recomendado para o `llama-3.3-70b-versatile` descontinuado — Problema 5).
@@ -216,7 +238,7 @@ equipe confirmar, a partir da própria conta, quais modelos estão realmente ace
 de escolher o segundo modelo do comparativo — em vez de confiar apenas na documentação
 pública, que nem sempre reflete o acesso liberado por conta/tier.
 
-**Problema 6 — `tool_use_failed` (erro 400) em casos benignos, e um bug real no guardrail jurídico exposto no processo.**
+**Problema 8 — `tool_use_failed` (erro 400) em casos benignos, e um bug real no guardrail jurídico exposto no processo.**
 Ao rodar o eval set completo com `groq_secundario` (`openai/gpt-oss-20b`), os casos 2
 ("como agendar"), 3 (diagnóstico do box 7) e 9 (guardrail jurídico) retornaram
 `Error code: 400 - tool_use_failed: Tool choice is required, but model did not call a tool`,
@@ -240,7 +262,7 @@ não tratada. Esse problema reforça um princípio geral: guardrails determinís
 sempre devem ser a primeira linha de defesa quando possível, porque são mais previsíveis do
 que depender do modelo se recusar "corretamente" em todo formato de saída.
 
-**Problema 7 — O modelo padrão (gpt-oss-120b) extraiu incorretamente a unidade em um caso, mesmo com o dado explícito na pergunta.**
+**Problema 9 — O modelo padrão (gpt-oss-120b) extraiu incorretamente a unidade em um caso, mesmo com o dado explícito na pergunta.**
 Na execução real do eval set (18/09/2026), o caso 1 ("Sou o morador do apartamento 101. Quanto
 eu consumi...") retornou, com `gpt-oss-120b`, a resposta "não encontrou registros de consumo
 para o apartamento 101" — apesar de `mock_data.py` ter o registro real (42,5 kWh / R$ 38,25).
