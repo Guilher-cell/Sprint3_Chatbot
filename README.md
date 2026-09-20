@@ -44,7 +44,7 @@ e as tentativas de modelo que não funcionaram no caminho até aqui (`llama-3.3-
 descontinuado pela Groq; `qwen/qwen3.6-27b` sem acesso liberado na conta), estão documentadas
 em detalhe em `docs/relatorio_evolucao.md`, Problemas 4, 5 e 7.
 
-## 3. Estrutura de pastas criada (conforme pedido no enunciado, §5)
+## 3. Estrutura de pastas criada 
 
 ```
 prompts/                      # system prompt versionado + tabela de versões
@@ -74,7 +74,7 @@ docs/                         # relatório de evolução (PDF, até 5 pág.) + r
 main_v2.py                    # entry point da Sprint 03 (CLI)
 ```
 
-## 4. Segurança e guardrails (enunciado §6)
+## 4. Segurança e guardrails 
 
 | Exigência | Implementação | Evidência real |
 |---|---|---|
@@ -104,7 +104,7 @@ python docs/_gerar_pdf.py   # regenera os PDFs a partir dos .md
 Detalhes completos de configuração (variáveis de ambiente, troca de modelo, Ollama opcional)
 estão no `README.md` original, seção 12, e em `docs/relatorio_modelos.md`.
 
-## 6. Relatório de evolução do projeto (enunciado §8)
+## 6. Relatório de evolução do projeto
 
 Ver `docs/relatorio_evolucao.md` (ou `.pdf`/`.docx`), com:
 - Resumo da evolução (Sprint 1/2 → Sprint 03)
