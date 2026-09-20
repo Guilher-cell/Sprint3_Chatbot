@@ -1,0 +1,13 @@
+# --- Sprint 1/2 (legado: chatbot.py, tools.py, modelo_de_testes.py) ---
+groq
+python-dotenv
+
+# --- Sprint 03 (refactory LangChain LCEL) ---
+langchain
+langchain-core
+langchain-community
+langchain-ollama
+langchain-groq
+pydantic>=2.0
+tiktoken
+
