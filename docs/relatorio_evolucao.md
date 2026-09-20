@@ -101,12 +101,11 @@ evoluir o projeto no Módulo 3.
 
 > **Nota de proveniência dos dados.** A coluna "Sprint 1/2 (legado)" vem de
 > `resultados_testes.md` (execução original, 14/06/2026). A coluna "Sprint 03 (LCEL)" vem da
-> execução real feita pela equipe em 18/09/2026 (`python evals/run_eval.py --mode sprint3
+> execução real feita pela equipe em 20/09/2026 (`python evals/run_eval.py --mode sprint3
 > --provider groq_oss` e `--provider groq_secundario`), registrada por completo em
 > `evals/sprint3_results.json`. A avaliação qualitativa por caso (adequada/inadequada) da
 > Sprint 03 foi feita comparando cada resposta com o `criterio` do `eval_set.json`; a mesma
-> avaliação da Sprint 2 nunca tinha sido preenchida no `resultados_testes.md` original (o
-> campo ficou como placeholder "preencher manualmente"), então a linha abaixo usa o único dado
+> avaliação da Sprint 2 nunca tinha sido preenchida no `resultados_testes.md` original, então a linha abaixo usa o único dado
 > qualitativo que o próprio arquivo original registrou em texto livre (a falha do Teste 5).
 > A contagem exata de tokens do prompt (via `tiktoken`) ainda depende de
 > `python evals/measure_tokens.py` rodado localmente — mantido como estimativa char/4 aqui.
